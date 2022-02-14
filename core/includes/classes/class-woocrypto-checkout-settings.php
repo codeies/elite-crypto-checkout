@@ -133,10 +133,14 @@ class Woocrypto_Checkout_Settings{
 
 	public function checkout_currency_callback() {
 		?> <select name="woocrypto_checkout_option_name[checkout_currency]" id="checkout_currency">
-			<?php $selected = (isset( $this->woocrypto_checkout_options['checkout_currency'] ) && $this->woocrypto_checkout_options['checkout_currency'] === 'USDT') ? 'selected' : '' ; ?>
-			<option value="USDT" <?php echo $selected; ?>>USDT</option>
-			<?php $selected = (isset( $this->woocrypto_checkout_options['checkout_currency'] ) && $this->woocrypto_checkout_options['checkout_currency'] === 'BUSD') ? 'selected' : '' ; ?>
-			<option value="BUSD" <?php echo $selected; ?>>BUSD</option>
+			<?php 
+			$currencies = array('ADA','ATOM','AVA','BCH','BNB','BTC','BUSD','CTSI','DASH','DOGE','DOT','EGLD','EOS','ETC','ETH','FIL','FRONT','FTM','GRS','HBAR','IOTX','LINK','LTC','MANA','MATIC','NEO','OM','ONE','PAX','QTUM','STRAX','SXP','TRX','TUSD','UNI','USDC','USDT','VAI','VET','WRX','XLM','XMR','XRP','XTZ','XVS','ZEC','ZIL'); ?>
+			<?php foreach ($currencies as  $currency) { 
+				$selected = (isset( $this->woocrypto_checkout_options['checkout_currency'] ) && $this->woocrypto_checkout_options['checkout_currency'] === $currency) ? 'selected' : '' ; 
+				?>
+				<option value="<?php echo $currency; ?>" <?php echo $selected; ?>><?php echo $currency; ?></option>
+			<?php } ?>
+			<?php ?>
 		</select> 
 		<script>
 			jQuery(document).ready(function() {

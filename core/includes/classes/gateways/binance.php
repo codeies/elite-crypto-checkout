@@ -177,10 +177,7 @@ function woocrypto_init_binancepay_class()
         */
         public function process_payment($order_id)
         {
-            ini_set('display_errors', 1);
-            ini_set('display_startup_errors', 1);
-            error_reporting(E_ALL);
-            print_r($this->woocrypto_checkout_options);
+    
             if(!$this->woocrypto_checkout_options){
                  wc_add_notice(__('Please select your checkout currency from WooCrypto settings', 'woocrypto-checkout'),'error');
             }
@@ -192,25 +189,6 @@ function woocrypto_init_binancepay_class()
 
             $this->order  = wc_get_order( $order_id );
             
-   /*         $order_items = $this->order->get_items(); // Get order items array of objects
-           // $items_count = count($items); // Get order items count
-            $goods  = []; // Initializing
-
-            // Loop through order items
-            foreach ( $order_items as $item_id => $item ) {
-                $variation_id = $item->get_variation_id();
-                $product_id   = $variation_id > 0 ? $variation_id : $item->get_product_id();
-
-                // Set specific data for each item in the array
-                $goods[] = array(
-                    'referenceGoodsId'   => $product_id,
-                    'goodsType'          => '02',
-                    'goodsCategory'      => 'Z000',
-                    'goodsName' => $item->get_name(),
-                    'goodsQuantity'    => $item->get_quantity(),
-                );
-            }
-            */
             $entityBody = [
                 "env" => ["terminalType" => "MINI_PROGRAM"],
                 'orderAmount'=>$this->woocrypto_checkout_options['exchange_rate'] * $this->order->get_total() ,
@@ -222,8 +200,8 @@ function woocrypto_init_binancepay_class()
                     "referenceGoodsId" => $order_id, 
                     "goodsName" => 'Order ID - '.$order_id , 
                 ],
-                "returnUrl"=>get_site_url().'/wc-api/woocrypto-binance/',
-                "cancelUrl"=>get_site_url().'/wc-api/woocrypto-binance/'
+                "returnUrl"=>$this->order->get_checkout_order_received_url(),
+                "cancelUrl"=>$this->order->get_cancel_order_url()
             ];
             $entityBody = json_encode($entityBody);
             
@@ -276,12 +254,13 @@ function woocrypto_init_binancepay_class()
         */
         public function webhook()
         {
-           function mylog($txt) {
+        /*   function mylog($txt) {
              file_put_contents('mylog.txt', $txt.PHP_EOL , FILE_APPEND | LOCK_EX);
             }
 
-            mylog(print_r($_REQUEST,true));
+            mylog(print_r($_REQUEST,true));*/
 
+           /*
             $payload = $headers['Binancepay-Timestamp'] . "\n" . $headers['Binancepay-Nonce'] . "\n" . $entityBody . "\n";
             $decodedSignature = base64_decode ( $headers['Binancepay-Signature'] );
             $ok = openssl_verify($payload, $decodedSignature, $this->live_secretkey, OPENSSL_ALGO_SHA256 );
@@ -292,8 +271,9 @@ function woocrypto_init_binancepay_class()
               } elseif ($ok == 0) {
                  // Verification Failed
               } else {
-                  echo "Error whilst checking request signature.";
+                //  echo "Error whilst checking request signature.";
               }
+            wp_die();*/
         }
     }
 }

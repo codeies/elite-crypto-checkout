@@ -1,6 +1,6 @@
 <?php
 /**
- * WooCrypto checkout
+ * Elite crypto checkout
  *
  * @package       WOOCRYPTOC
  * @author        Codeies
@@ -8,7 +8,7 @@
  * @version       1.0
  *
  * @wordpress-plugin
- * Plugin Name:   WooCrypto checkout
+ * Plugin Name:   Elite crypto checkout
  * Plugin URI:    https://codeies.com/woocrypto-checkout
  * Description:   Woocommerce Crypto currency checkout
  * Version:       1.0
@@ -20,13 +20,13 @@
  * License URI:   https://www.gnu.org/licenses/gpl-2.0.html
  *
  * You should have received a copy of the GNU General Public License
- * along with WooCrypto checkout. If not, see <https://www.gnu.org/licenses/gpl-2.0.html/>.
+ * along with Elite crypto checkout. If not, see <https://www.gnu.org/licenses/gpl-2.0.html/>.
  */
 
 // Exit if accessed directly.
 if ( ! defined( 'ABSPATH' ) ) exit;
 // Plugin name
-define( 'WOOCRYPTOC_NAME',			'WooCrypto checkout' );
+define( 'WOOCRYPTOC_NAME',			'Elite crypto checkout' );
 
 // Plugin version
 define( 'WOOCRYPTOC_VERSION',		'1.0' );

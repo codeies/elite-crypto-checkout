@@ -81,7 +81,6 @@ if ( ! class_exists( 'Woocrypto_Checkout' ) ) :
 				self::$instance					= new Woocrypto_Checkout;
 				self::$instance->base_hooks();
 				self::$instance->includes();
-				self::$instance->helpers		= new Woocrypto_Checkout_Helpers();
 				self::$instance->settings		= new Woocrypto_Checkout_Settings();
 				self::$instance->Woocommerce	= new Woocrypto_Checkout_Woocommerce();
 
@@ -106,7 +105,7 @@ if ( ! class_exists( 'Woocrypto_Checkout' ) ) :
 		 * @return  void
 		 */
 		private function includes() {
-			require_once WOOCRYPTOC_PLUGIN_DIR . 'core/includes/classes/class-woocrypto-checkout-helpers.php';
+			//require_once WOOCRYPTOC_PLUGIN_DIR . 'core/includes/classes/class-woocrypto-checkout-helpers.php';
 			require_once WOOCRYPTOC_PLUGIN_DIR . 'core/includes/classes/class-woocrypto-checkout-settings.php';
 			require_once WOOCRYPTOC_PLUGIN_DIR . 'core/includes/classes/class-woocrypto-checkout-woocommerce.php';
 

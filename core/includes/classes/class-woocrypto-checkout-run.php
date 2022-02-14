@@ -43,10 +43,6 @@ class Woocrypto_Checkout_Run{
 	private function add_hooks(){
 	
 		add_action( 'plugin_action_links_' . WOOCRYPTOC_PLUGIN_BASE, array( $this, 'add_plugin_action_link' ), 20 );
-		add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_frontend_scripts_and_styles' ), 20 );
-		add_action( 'wp_ajax_nopriv_my_demo_ajax_call', array( $this, 'my_demo_ajax_call_callback' ), 20 );
-		add_action( 'wp_ajax_my_demo_ajax_call', array( $this, 'my_demo_ajax_call_callback' ), 20 );
-
 	
 	}
 
@@ -76,52 +72,5 @@ class Woocrypto_Checkout_Run{
 	}
 
 
-	/**
-	 * Enqueue the frontend related scripts and styles for this plugin.
-	 *
-	 * @access	public
-	 * @since	1.0
-	 *
-	 * @return	void
-	 */
-	public function enqueue_frontend_scripts_and_styles() {
-		wp_enqueue_script( 'woocryptoc-frontend-scripts', WOOCRYPTOC_PLUGIN_URL . 'core/includes/assets/js/frontend-scripts.js', array(), WOOCRYPTOC_VERSION, true );
-		wp_localize_script( 'woocryptoc-frontend-scripts', 'woocryptoc', array(
-			'demo_var'   		=> __( 'This is some demo text coming from the backend through a variable within javascript.', 'woocrypto-checkout' ),
-			'ajaxurl' 			=> admin_url( 'admin-ajax.php' ),
-			'security_nonce'	=> wp_create_nonce( "your-nonce-name" ),
-		));
-	}
-
-
-	/**
-	 * The callback function for my_demo_ajax_call
-	 *
-	 * @access	public
-	 * @since	1.0
-	 *
-	 * @return	void
-	 */
-	public function my_demo_ajax_call_callback() {
-		check_ajax_referer( 'your-nonce-name', 'ajax_nonce_parameter' );
-
-		$demo_data = isset( $_REQUEST['demo_data'] ) ? sanitize_text_field( $_REQUEST['demo_data'] ) : '';
-		$response = array( 'success' => false );
-
-		if ( ! empty( $demo_data ) ) {
-			$response['success'] = true;
-			$response['msg'] = __( 'The value was successfully filled.', 'woocrypto-checkout' );
-		} else {
-			$response['msg'] = __( 'The sent value was empty.', 'woocrypto-checkout' );
-		}
-
-		if( $response['success'] ){
-			wp_send_json_success( $response );
-		} else {
-			wp_send_json_error( $response );
-		}
-
-		die();
-	}
 
 }
