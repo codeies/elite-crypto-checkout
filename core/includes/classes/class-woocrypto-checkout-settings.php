@@ -138,13 +138,16 @@ class Woocrypto_Checkout_Settings{
 			<?php foreach ($currencies as  $currency) { 
 				$selected = (isset( $this->woocrypto_checkout_options['checkout_currency'] ) && $this->woocrypto_checkout_options['checkout_currency'] === $currency) ? 'selected' : '' ; 
 				?>
-				<option value="<?php echo $currency; ?>" <?php echo $selected; ?>><?php echo $currency; ?></option>
+				<option value="<?php echo esc_html($currency); ?>" 
+					<?php $selected; // No need to escape this as it will always be selected or empty ?>>
+					<?php echo esc_html($currency); ?>
+				</option>
 			<?php } ?>
 			<?php ?>
 		</select> 
 		<script>
 			jQuery(document).ready(function() {
-				 jQuery("#checkout_currency_span").text(jQuery('#checkout_currency').val());
+			 jQuery("#checkout_currency_span").text(jQuery('#checkout_currency').val());
 			  jQuery('#checkout_currency').change(function(event) {
 			    jQuery("#checkout_currency_span").text(jQuery(this).val());
 			  });

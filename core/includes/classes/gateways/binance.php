@@ -32,7 +32,7 @@ function woocrypto_init_binancepay_class()
             $this->title = $this->get_option('title');
             $this->description = $this->get_option('description');
             $this->enabled = $this->get_option('enabled');
-            $this->testmode = 'yes'; // === $this->get_option( 'testmode' );
+            $this->testmode = null; // === $this->get_option( 'testmode' );
             $this->live_secretkey = $this->testmode ? $this->get_option('test_secretkey') : $this->get_option('live_secretkey');
             $this->live_apikey = $this->testmode ? $this->get_option('test_apikey') : $this->get_option('live_apikey');
 
@@ -88,7 +88,7 @@ function woocrypto_init_binancepay_class()
                     'title' => 'Secret Key',
                     'type' => 'password'
                 ),
-                'testmode' => array(
+/*                'testmode' => array(
                     'title' => 'Enable/Disable',
                     'label' => 'Enable Sandbox',
                     'type' => 'checkbox',
@@ -102,7 +102,7 @@ function woocrypto_init_binancepay_class()
                 'test_secretkey' => array(
                     'title' => 'Sandbox Secret Key',
                     'type' => 'password'
-                )
+                )*/
             );
 
         }
@@ -190,9 +190,10 @@ function woocrypto_init_binancepay_class()
             $this->order  = wc_get_order( $order_id );
             
             $entityBody = [
-                "env" => ["terminalType" => "MINI_PROGRAM"],
+                "env" => ["terminalType" => "WEB"],
                 'orderAmount'=>$this->woocrypto_checkout_options['exchange_rate'] * $this->order->get_total() ,
                 'merchantTradeNo'=>$order_id,
+                "prepayId"=>$order_id,
                 "currency" => $this->woocrypto_checkout_options['checkout_currency'],
                 "goods" => [
                     "goodsType" => "01", 
@@ -204,35 +205,26 @@ function woocrypto_init_binancepay_class()
                 "cancelUrl"=>$this->order->get_cancel_order_url()
             ];
             $entityBody = json_encode($entityBody);
-            
-            $ch = curl_init();
-            curl_setopt($ch, CURLOPT_URL, 'https://bpay.binanceapi.com/binancepay/openapi/v2/order');
-            curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-            curl_setopt($ch, CURLOPT_POST, 1);
-            curl_setopt($ch, CURLOPT_POSTFIELDS, $entityBody);
-
             $payload = $time . "\n" . $nonce . "\n" . $entityBody . "\n";
-            //echo $payload;
             $signature = strtoupper(hash_hmac('SHA512', $payload, $this->live_secretkey));
-           // echo $signature;
-            $headers = array();
-            $headers[] = 'Content-Type: application/json';
-            $headers[] = 'Binancepay-Timestamp: ' . $time . '';
-            $headers[] = 'Binancepay-Nonce: ' . $nonce . '';
-            $headers[] = 'Binancepay-Certificate-Sn: '.$this->live_apikey.'';
-            $headers[] = 'Binancepay-Signature: ' . $signature . '';
 
-            curl_setopt($ch, CURLOPT_HTTPHEADER, $headers);
+            $args = array(
+                'headers' => array(
+                    'Content-Type' => 'application/json; charset=utf-8' ,
+                    'Binancepay-Timestamp' =>  $time  ,
+                    'Binancepay-Nonce' =>  $nonce  ,
+                    'BinancePay-Certificate-SN' =>  $this->live_apikey  ,
+                    'Binancepay-Signature' =>  $signature  ,
+                ),
+                'body' => $entityBody
+            );
+            $response = wp_remote_post( 'https://bpay.binanceapi.com/binancepay/openapi/v2/order', $args );
 
-            $result = json_decode(curl_exec($ch));
-            if (curl_errno($ch))
-            {
-                wc_add_notice( $e->getMessage(), 'error' );
-                $order->update_status( 'failed', $e->getMessage() );
-            }
-            
-            curl_close($ch);
+            $result     = json_decode( wp_remote_retrieve_body( $response ) );
+
             if($result->status =='SUCCESS'){
+                 // $order->update_status( 'on-hold', __( 'Awaiting binance payment', 'wc-gateway-offline' ) );
+                            
                 $url = $result->data->checkoutUrl;
                      return array(
                         'result' => 'success',
@@ -254,26 +246,41 @@ function woocrypto_init_binancepay_class()
         */
         public function webhook()
         {
-        /*   function mylog($txt) {
-             file_put_contents('mylog.txt', $txt.PHP_EOL , FILE_APPEND | LOCK_EX);
-            }
+            $headers = getallheaders();
+            if(!isset($headers['binancepay-signature']))
+                return;
 
-            mylog(print_r($_REQUEST,true));*/
+            //$payload = $headers['binancepay-timestamp'] . "\n" . $headers['binancepay-nonce'] . "\n" . $entityBody . "\n";
+           // $decodedSignature = base64_decode ( $headers['binancepay-signature'] );
 
-           /*
-            $payload = $headers['Binancepay-Timestamp'] . "\n" . $headers['Binancepay-Nonce'] . "\n" . $entityBody . "\n";
-            $decodedSignature = base64_decode ( $headers['Binancepay-Signature'] );
-            $ok = openssl_verify($payload, $decodedSignature, $this->live_secretkey, OPENSSL_ALGO_SHA256 );
-              if ($ok == 1) {
-                  $this->order = wc_get_order( $$order_id );
-                  $this->order->payment_complete();
-                  $this->order->reduce_order_stock();
-              } elseif ($ok == 0) {
-                 // Verification Failed
-              } else {
-                //  echo "Error whilst checking request signature.";
-              }
-            wp_die();*/
+           // $result = openssl_verify($payload, $decodedSignature, $this->live_apikey, OPENSSL_ALGO_SHA256 );
+
+
+            $request_body = @file_get_contents('php://input');
+
+            $request_body = json_decode($request_body,true);
+
+
+            //if ($result == 1) {
+               // Verified Payment
+                if(isset($request_body['data'])){
+                    $request_data = json_decode($txt['data'],true);
+                    $order_id = $request_data['merchantTradeNo'];
+                    $amount = $request_data['totalFee'];
+                    $currency = $request_data['currency'];
+                    if($request_body['bizStatus'] == 'PAY_SUCCESS' || $request_body['bizStatus'] =='PAY_CLOSED'){
+                         $order = wc_get_order( $order_id );
+                         $order->update_status( 'completed' );
+                         $order->add_meta_data('Binance Amount '.$currency.' ', wc_clean($posted['totalFee']));
+                    }
+                   
+                }
+
+           // } elseif ($result == 0) {
+             //   error_log( "signature is invalid for given data.");
+            //} else {
+             //   error_log( "error: ".openssl_error_string());
+           // }
         }
     }
 }

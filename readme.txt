@@ -23,9 +23,9 @@ With the addition of BIDR, DAI, TKO and XVG, Binance Pay now supports more than 
 
 == Frequently Asked Questions ==
 
-= How to Apply for Binance Pay Merchant =
+= How to Apply for [Binance Pay Merchant Account](https://accounts.binance.com/en/register?return_to=aHR0cHM6Ly9tZXJjaGFudC5iaW5hbmNlLmNvbS9lbi9vbmJvYXJkaW5nL21lcmNoYW50P2FwcGx5LW1lcmNoYW50LWRpcmVjdA==&ref=39895487 "Signup Binance Merchant Account") =
 
-1.Go to our merchant landing page and click [Become a Merchant](https://merchant.binance.com/en "Signup Binance Merchant Account").
+1.Go to our merchant landing page and click [Become a Merchant](https://accounts.binance.com/en/register?return_to=aHR0cHM6Ly9tZXJjaGFudC5iaW5hbmNlLmNvbS9lbi9vbmJvYXJkaW5nL21lcmNoYW50P2FwcGx5LW1lcmNoYW50LWRpcmVjdA==&ref=39895487 "Signup Binance Merchant Account").
 2. Select your status, and click [Apply].
 3. You will see an overview of the application access. Click [Apply], then fill in the form. Binance will review your application.
 
@@ -40,6 +40,11 @@ Currently you have to manually adjust the conversion rates from woocommerce->Eli
 2. Click on the button `Add new`
 3. Search for `Elite crypto checkout` and click 'Install Now' or click on the `upload` link to upload `woocrypto-checkout.zip`
 4. Click on `Activate plugin`
+5. Woocommerce->woocrypto-checkout and put select your currency and enter the exchange rate 
+6. Woocommerce->Settings->Payments->Binance Pay->Manage
+7. Enable Binance Pay , Put your Public API key and Secret Key  
+
+
 
 == Changelog ==
 

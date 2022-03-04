@@ -9,7 +9,7 @@
  *
  * @wordpress-plugin
  * Plugin Name:   Elite crypto checkout
- * Plugin URI:    https://codeies.com/woocrypto-checkout
+ * Plugin URI:    https://codeies.com/product/elite-crypto-checkout/
  * Description:   Woocommerce Crypto currency checkout
  * Version:       1.0
  * Author:        Codeies
@@ -56,6 +56,9 @@ require_once WOOCRYPTOC_PLUGIN_DIR . 'core/class-woocrypto-checkout.php';
  * @since   1.0
  * @return  object|Woocrypto_Checkout
  */
+
+if ( ! in_array( 'woocommerce/woocommerce.php', apply_filters( 'active_plugins', get_option( 'active_plugins' ) ) ) ) return;
+
 function WOOCRYPTOC() {
 	return Woocrypto_Checkout::instance();
 }
